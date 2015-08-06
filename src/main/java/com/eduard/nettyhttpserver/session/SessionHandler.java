@@ -59,7 +59,7 @@ public class SessionHandler{
 	 * Method former table counter request's by IP
 	 * @return {@link String}
 	 */
-	public synchronized String getCounterRequest(){
+	public  String getCounterRequest(){
 		return counterRequest.getInfoCounterRequestToHTML();
 	}
 	
@@ -80,7 +80,7 @@ public class SessionHandler{
 	 * Get part of status html page about count redirect's
 	 * @return {@link String}
 	 */
-	public synchronized String getInfoAboutCountRedirect(){
+	public  String getInfoAboutCountRedirect(){
 		
 		StringBuilder tableRedirect = new StringBuilder();
 		tableRedirect.append("<style> table, td, th {"
@@ -129,7 +129,7 @@ public class SessionHandler{
 	 * </pre>
 	 * @return all active channel's
 	 */
-	public synchronized int getActiveClientCount(){
+	public  int getActiveClientCount(){
 		return activeClientCount;
 	}
 	
@@ -140,7 +140,7 @@ public class SessionHandler{
 	 * </pre> 
 	 * @return all count request's
 	 */
-	public synchronized int getRequestTotalCount() {
+	public  int getRequestTotalCount() {
 		return requestTotalCount;
 	}
 	
@@ -173,7 +173,7 @@ public class SessionHandler{
 		listLastFinishedConnections.add(lfcs);
 	}
 	
-	public synchronized String getLastNoteFinishedConnections(){
+	public  String getLastNoteFinishedConnections(){
 		StringBuilder table = new StringBuilder();
 		table.append("<p><h3>Last 16 finished connections : </h3></p>");
 		table.append("<table><tr>")
