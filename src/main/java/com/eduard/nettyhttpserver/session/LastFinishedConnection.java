@@ -5,12 +5,12 @@ public class LastFinishedConnection {
 	private String ip;
 	private String uri;
 	private String timestamp;
-	private int sendBytes;
-	private int receivedBytes;
-	private double speed;
+	private long sendBytes;
+	private long receivedBytes;
+	private long speed;
 	
 	public LastFinishedConnection(String ip, String uri, String timestamp,
-			int sendBytes, int receivedBytes, double speed) {
+			long sendBytes, long receivedBytes, long speed) {
 		super();
 		this.ip = ip;
 		this.uri = uri;
@@ -41,10 +41,8 @@ public class LastFinishedConnection {
 	}
 	
 	public String getSpeed(){
-		long pre = (long)(speed * 100);
-		double speedOk = ((double) pre)/100;
 		
-		return String.valueOf(speedOk);
+		return String.valueOf(speed);
 	}
 	
 	

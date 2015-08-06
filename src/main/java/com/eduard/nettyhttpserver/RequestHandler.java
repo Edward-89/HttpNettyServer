@@ -101,6 +101,7 @@ public class RequestHandler {
 				+ "</h3></p><p><h3>Count open channels now : "
 				+ session.getActiveClientCount() + "</h3></p>"
 				+ session.getInfoAboutCountRedirect()
+				+ session.getUniqueRequests()
 				+ session.getCounterRequest()
 				+ session.getLastNoteFinishedConnections()).getBytes();
 		return new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(content));

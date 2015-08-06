@@ -14,6 +14,11 @@ public class SessionHandler{
 		
 	}
 	
+	private Map<String, Set<String>> uniqueRequests = new HashMap<String, Set<String>>();
+	
+	/**
+	 * Repository for last sixteen finished connections 
+	 */
 	private List<LastFinishedConnection> listLastFinishedConnections =
 			new LinkedList<LastFinishedConnection>();
 	
@@ -82,7 +87,7 @@ public class SessionHandler{
 									+ "background-color: magenta;"
 									+ "color: white;} "
 									+ "</style>");
-		tableRedirect.append("<p><h3>Table of count redirect's</h3></p>"
+		tableRedirect.append("<p><h3>Table of count redirect's : </h3></p>"
 				 					+ "<table><tr>"
 									+ "<th>URL</th>"
 									+ "<th>Count Redirect's</th></tr>");
@@ -154,7 +159,7 @@ public class SessionHandler{
 	 * @param speed
 	 */
 	public synchronized void setNoteAboutConnection(InetAddress ip, String uri,
-			long lastTime, int sentBytes, int receivedBytes, double speed) {
+			long lastTime, long sentBytes, long receivedBytes, long speed) {
 		
 		LastFinishedConnection lfcs = 	new LastFinishedConnection(ip.toString(),
 				uri.toLowerCase(), new Date(lastTime).toString(), sentBytes, receivedBytes, speed);
@@ -192,6 +197,44 @@ public class SessionHandler{
 		
 		
 		return table.toString();
+	}
+	
+	public synchronized void setCountUniqueRequest(InetAddress address, String uri){
+		
+		String ip = address.toString();
+		Set<String> set;
+		if(uniqueRequests.containsKey(ip)){
+			set = uniqueRequests.get(ip);
+			set.add(uri);
+		} else {
+			set = new HashSet<String>();
+			
+		}
+		uniqueRequests.put(ip, set);
+		
+	}
+	
+	public synchronized String getUniqueRequests(){
+		StringBuilder table = new StringBuilder();
+		table.append("<p><h3>Count unique request's : </h3></p>");
+		table.append("<table><tr>")
+			 .append("<th>IP</th>")
+			 .append("<th>Count</th>")
+			 .append("</tr>");
+		
+		for(String key : uniqueRequests.keySet()){
+			table.append("<tr>")
+				 .append("<td>" + key + "</td>")
+				 .append("<td>" + uniqueRequests.get(key).size() + "</td>")
+				 .append("</tr>");
+		}
+		
+		table.append("</table>");
+		
+		
+		return table.toString();
+		
+		
 	}
 	
 	
