@@ -1,5 +1,10 @@
 package com.eduard.nettyhttpserver.session;
 
+/**
+ * Class repository by last finished connection
+ * @author Eduard Voronkov
+ *
+ */
 public class LastFinishedConnection {
 	
 	private String ip;
@@ -9,6 +14,15 @@ public class LastFinishedConnection {
 	private long receivedBytes;
 	private long speed;
 	
+	/**
+	 * One constructor with parameters
+	 * @param ip
+	 * @param uri
+	 * @param timestamp
+	 * @param sendBytes
+	 * @param receivedBytes
+	 * @param speed
+	 */
 	public LastFinishedConnection(String ip, String uri, String timestamp,
 			long sendBytes, long receivedBytes, long speed) {
 		super();
@@ -19,6 +33,11 @@ public class LastFinishedConnection {
 		this.receivedBytes = receivedBytes;
 		this.speed = speed;
 	}
+	
+	/*
+	 * Getters.
+	 * The method provides access to private instance fields
+	 */
 	
 	public String getIP(){
 		return ip;
