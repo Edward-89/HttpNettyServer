@@ -32,6 +32,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	 * Repository for session information
 	 */
 	private SessionHandler session;
+
 	
 	public HttpServerHandler(SessionHandler session) {
 		this.session = session;
@@ -45,15 +46,21 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception{
+		
 		if(msg instanceof HttpRequest){
+			
 			//timestamp
 			long lastTime = System.currentTimeMillis();
+			//client address
 			InetAddress ip = ((InetSocketAddress)ctx.channel().remoteAddress()).getAddress();
+			//sending out the processing for calculating performs requests by ip
 			session.setCounterRequestOfIP(ip, lastTime);
 			
 			HttpRequest request = (HttpRequest) msg;
 			
+			//evaluate received bytes
 			long receivedBytes = request.toString().getBytes().length;
+			//sending out the processing for calculating count unique requests
 			session.setCountUniqueRequest(ip, request.getUri().toLowerCase());
 			
 			if (HttpHeaders.is100ContinueExpected(request)) {
@@ -63,13 +70,13 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             boolean keepAlive = HttpHeaders.isKeepAlive(request);
             FullHttpResponse response = RequestHandler.getResponce(ctx, request, session);
             
+            //time between request and response
             long deltaTime  = System.currentTimeMillis() - lastTime;
-            long sentBytes = response.content().readableBytes();
-            //multiple 1000, because the purpose of the dimension bytes/sec
-            
+            //evaluate send bytes
+            long sendBytes = response.content().readableBytes();
             
             response.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
-            response.headers().set(CONTENT_LENGTH, sentBytes);
+            response.headers().set(CONTENT_LENGTH, sendBytes);
 
             if (!keepAlive) {
                 ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
@@ -80,8 +87,10 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             
             long speed = (deltaTime != 0) ? receivedBytes/deltaTime : 0;
             session.setNoteAboutConnection(ip, request.getUri(), lastTime,
-            		sentBytes, receivedBytes, speed);
+            		sendBytes, receivedBytes, speed);
+            
 		} 
+		
 	}
 	
 	@Override
@@ -93,13 +102,13 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         session.setActiveConnectionCount('+');
-        ctx.fireChannelRegistered();
+        super.channelRegistered(ctx);
     }
 
 	@Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
 		session.setActiveConnectionCount('-');
-		ctx.fireChannelUnregistered();
+		super.channelUnregistered(ctx);
 		
     }
 
