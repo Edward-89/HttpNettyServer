@@ -29,7 +29,7 @@ public class HttpServer {
 	 * Instance {@link SessionHandler} for server
 	 */
 	private static SessionHandler session = new SessionHandler(); 
-	
+		
 	
 	public static void main(String[] args) throws Exception {
 		
@@ -47,10 +47,10 @@ public class HttpServer {
 					 .childHandler(new ChannelInitializer<SocketChannel>() {
 							@Override
 							protected void initChannel(SocketChannel ch) throws Exception {
-								ChannelPipeline pipelline = ch.pipeline();
-								pipelline.addLast(new HttpRequestDecoder());
-								pipelline.addLast(new HttpResponseEncoder());
-								pipelline.addLast(new HttpServerHandler(session));
+								ChannelPipeline pipeline = ch.pipeline();
+								pipeline.addLast(new HttpRequestDecoder());
+								pipeline.addLast(new HttpResponseEncoder());
+								pipeline.addLast(new HttpServerHandler(session));
 							}
 						})
 					 .bind(SERVER_PORT).sync().channel()
