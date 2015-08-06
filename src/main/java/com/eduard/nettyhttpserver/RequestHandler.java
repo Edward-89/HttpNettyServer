@@ -23,14 +23,13 @@ import static io.netty.handler.codec.http.HttpVersion.*;
 public class RequestHandler {
 	
 	/**
-	 * <pre> The method formate depended uri and formate responce</pre>
+	 * <pre> Method generates a response {@link FullHttpResponse} depending on the request {@link HttpRequest}</pre>
 	 * @param ctx
 	 * @param request
 	 * @param session
 	 * @return {@link FullHttpResponce}
 	 * @throws InterruptedException
 	 */
-
 	public static FullHttpResponse getResponce(ChannelHandlerContext ctx, HttpRequest request,
 			SessionHandler session) throws InterruptedException {
 		
@@ -94,7 +93,6 @@ public class RequestHandler {
 	 */
 	private static FullHttpResponse getStatus(ChannelHandlerContext ctx,
 			HttpRequest request, SessionHandler session) {
-		// TODO Auto-generated method stub
 		
 		byte[] content = String.valueOf("<h2><p>STATUS PAGE</p></h2>"
 				+ "<p><h3>Total count request's : " + session.getRequestTotalCount()
@@ -104,6 +102,7 @@ public class RequestHandler {
 				+ session.getUniqueRequests()
 				+ session.getCounterRequest()
 				+ session.getLastNoteFinishedConnections()).getBytes();
+		
 		return new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(content));
 	} 
 
