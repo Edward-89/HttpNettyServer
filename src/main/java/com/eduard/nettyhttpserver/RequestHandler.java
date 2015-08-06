@@ -1,5 +1,8 @@
 package com.eduard.nettyhttpserver;
 
+
+import com.eduard.nettyhttpserver.session.SessionHandler;
+
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -18,23 +21,37 @@ import static io.netty.handler.codec.http.HttpVersion.*;
  * @see HttpServerHandler
  */
 public class RequestHandler {
+	
+	/**
+	 * <pre> The method formate depended uri and formate responce</pre>
+	 * @param ctx
+	 * @param request
+	 * @param session
+	 * @return {@link FullHttpResponce}
+	 * @throws InterruptedException
+	 */
 
-	public static FullHttpResponse getResponce(ChannelHandlerContext ctx, HttpRequest request) throws InterruptedException {
+	public static FullHttpResponse getResponce(ChannelHandlerContext ctx, HttpRequest request,
+			SessionHandler session) throws InterruptedException {
 		
 		QueryStringDecoder decoder = new QueryStringDecoder(request.getUri());
 		String uri = decoder.path();
 		
 		if(uri.equalsIgnoreCase("/hello")){
+			session.addRequestCount();
 			Thread.sleep(10000L);
-			byte[] content =  "<center><h1>Hello World</h1></center>".getBytes();
+			byte[] content =  String.valueOf("<center><style>h1 { font-size: 150px;}</style>"
+					+ "<h1>Hello World</h1></center>").getBytes();
 			return new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(content));
 		} 
 		
 		if(uri.equalsIgnoreCase("/status")){
-			return null;
+			session.addRequestCount();
+			return getStatus(ctx, request, session);
 		}
 		
 		if(uri.equalsIgnoreCase("/redirect")){
+			session.addRequestCount();
 			FullHttpResponse response = null;
 			
 			if(decoder.parameters().get("url") != null){
@@ -43,16 +60,18 @@ public class RequestHandler {
 				if(shemaPart == -1){
 					uriRedirect = String.valueOf("http://" + uriRedirect);
 				}
+				session.addRedirect(uriRedirect);
 				response = new DefaultFullHttpResponse(HTTP_1_1, FOUND);
 		        response.headers().set(LOCATION, uriRedirect);
 		        return response;
 			} 
-			byte[] content = String.valueOf("<body text='#ff0000'><h2>"
+			byte[] content = String.valueOf("<style>h2{ color: #ff0000 }</style><h2>"
 					+ "Not found parameter url "
 					+ "</h2></body> "
 					).getBytes();
 			return new DefaultFullHttpResponse(HTTP_1_1, NOT_IMPLEMENTED, Unpooled.wrappedBuffer(content));
 		} else {
+			session.addRequestCount();
 			String answer = "<html><body>"
 					+ "<center><h3><p>Hi, People!</p></h3></center>"
 					+ "<center><h3><p>This is my testing task</p></h3></center>"
@@ -64,6 +83,27 @@ public class RequestHandler {
 					
 			return new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(content));		
 		}
+	}
+	
+	
+	/**
+	 * The method formate Status Page
+	 * @param ctx
+	 * @param request
+	 * @return {@link FullHttpResponse}
+	 */
+	private static FullHttpResponse getStatus(ChannelHandlerContext ctx,
+			HttpRequest request, SessionHandler session) {
+		// TODO Auto-generated method stub
+		
+		byte[] content = String.valueOf("<h2><p>STATUS PAGE</p></h2>"
+				+ "<p><h3>Total count request's : " + session.getRequestTotalCount()
+				+ "</h3></p><p><h3>Count open channels now : "
+				+ session.getActiveClientCount() + "</h3></p>"
+				+ session.getInfoAboutCountRedirect()
+				+ session.getCounterRequest()
+				+ session.getLastNoteFinishedConnections()).getBytes();
+		return new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(content));
 	} 
 
 }

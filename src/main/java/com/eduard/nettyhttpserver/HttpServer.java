@@ -1,5 +1,7 @@
 package com.eduard.nettyhttpserver;
 
+import com.eduard.nettyhttpserver.session.SessionHandler;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -14,19 +16,26 @@ import io.netty.handler.logging.LoggingHandler;
 
 /**
  * The HttpServer is simple relies server 
- * @author eduard
+ * @author Eduard Voronkov 
  *
  */
 
 public class HttpServer {
-	/*
-	 * default server port
+	/**
+	 * Default server port
 	 */
 	private static final int SERVER_PORT = 8080;
+	/**
+	 * Instance {@link SessionHandler} for server
+	 */
+	private static SessionHandler session = new SessionHandler(); 
+	
 	
 	public static void main(String[] args) throws Exception {
 		
-		//Configure the server
+		/**
+		 * Configure the server
+		 */
 		EventLoopGroup bossGroup 	= new NioEventLoopGroup(1);
 		EventLoopGroup workerGroup	= new NioEventLoopGroup();
 		
@@ -41,12 +50,11 @@ public class HttpServer {
 								ChannelPipeline pipelline = ch.pipeline();
 								pipelline.addLast(new HttpRequestDecoder());
 								pipelline.addLast(new HttpResponseEncoder());
-								pipelline.addLast(new HttpServerHandler());
+								pipelline.addLast(new HttpServerHandler(session));
 							}
 						})
 					 .bind(SERVER_PORT).sync().channel()
 					 .closeFuture().sync();
-					 
 			
 		} finally {
 			bossGroup.shutdownGracefully();
