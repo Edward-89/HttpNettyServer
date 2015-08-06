@@ -14,6 +14,9 @@ public class SessionHandler{
 		
 	}
 	
+	/**
+	 * Repository for statistic unique requests
+	 */
 	private Map<String, Set<String>> uniqueRequests = new HashMap<String, Set<String>>();
 	
 	/**
@@ -199,6 +202,11 @@ public class SessionHandler{
 		return table.toString();
 	}
 	
+	/**
+	 * Method sends the input parameters in the storage required for the counting of unique request
+	 * @param address
+	 * @param uri
+	 */
 	public synchronized void setCountUniqueRequest(InetAddress address, String uri){
 		
 		String ip = address.toString();
@@ -214,9 +222,13 @@ public class SessionHandler{
 		
 	}
 	
+	/**
+	 * Method return {@link String} information about the counting unique requests
+	 * @return {@link String}
+	 */
 	public synchronized String getUniqueRequests(){
 		StringBuilder table = new StringBuilder();
-		table.append("<p><h3>Count unique request's : </h3></p>");
+		table.append("<p><h3>Counting unique request's : </h3></p>");
 		table.append("<table><tr>")
 			 .append("<th>IP</th>")
 			 .append("<th>Count</th>")
